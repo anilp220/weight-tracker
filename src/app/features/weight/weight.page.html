@@ -1,0 +1,101 @@
+<ion-content [fullscreen]="true">
+
+  <div class="weight-screen">
+
+    <header class="screen-header">
+      <h1>Weight</h1>
+
+      <p>
+        {{ formattedDate }}
+      </p>
+    </header>
+
+    <main>
+
+      <p class="eyebrow">
+        TODAY'S WEIGHT
+      </p>
+
+      <div class="weight-control">
+
+        <button class="adjust-button" type="button" aria-label="Decrease weight" (click)="decreaseWeight()">
+          −
+        </button>
+
+        <div class="weight-circle">
+
+          <div class="weight-value">
+            {{ formattedWeight() }}
+          </div>
+
+          <div class="weight-unit">
+            kg
+          </div>
+
+        </div>
+
+        <button class="adjust-button" type="button" aria-label="Increase weight" (click)="increaseWeight()">
+          +
+        </button>
+
+      </div>
+
+      <div class="weight-change">
+        <span class="change-value">
+          ↓ 0.3 kg
+        </span>
+
+        <span class="change-label">
+          vs yesterday
+        </span>
+      </div>
+
+      <section class="goal-section">
+
+        <div class="goal-labels">
+          <span>{{ startingWeight }} kg</span>
+          <span>{{ targetWeight }} kg</span>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-value" [style.width.%]="progressPercent()">
+          </div>
+        </div>
+
+        <div class="goal-progress">
+          {{ progressPercent() | number:'1.0-0' }}%
+        </div>
+
+        <div class="goal-summary">
+
+          <div>
+            <strong>
+              {{ weightLost() }} kg
+            </strong>
+
+            <span>lost</span>
+          </div>
+
+          <div>
+            <strong>
+              {{ weightRemaining() }} kg
+            </strong>
+
+            <span>remaining</span>
+          </div>
+
+        </div>
+
+      </section>
+
+      <button class="save-button" type="button" (click)="saveWeight()">
+
+        SAVE WEIGHT
+
+      </button>
+
+    </main>
+
+  </div>
+
+</ion-content>
