@@ -1,13 +1,318 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>progress</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">progress</ion-title>
-    </ion-toolbar>
-  </ion-header>
+
+  <div class="progress-screen">
+
+    <header class="screen-header">
+
+      <h1>Progress</h1>
+
+      <p>
+        Your weight journey
+      </p>
+
+    </header>
+
+
+    <!-- Current status -->
+
+    <section class="current-status">
+
+      <div class="current-weight">
+
+        <span class="eyebrow">
+          CURRENT WEIGHT
+        </span>
+
+        <strong>
+          {{ currentWeight() ?? '--' }}
+        </strong>
+
+        <span>kg</span>
+
+      </div>
+
+      <div class="total-change">
+
+        <strong>
+          {{ totalChange() | number:'1.1-1' }} kg
+        </strong>
+
+        <span>
+          {{ totalChangeLabel() }}
+        </span>
+
+      </div>
+
+    </section>
+
+
+    <!-- Filters -->
+
+    <div class="filters">
+
+      <button
+        [class.active]="filter() === 'week'"
+        (click)="setFilter('week')">
+
+        Week
+
+      </button>
+
+      <button
+        [class.active]="filter() === 'month'"
+        (click)="setFilter('month')">
+
+        Month
+
+      </button>
+
+      <button
+        [class.active]="filter() === 'full'"
+        (click)="setFilter('full')">
+
+        Full
+
+      </button>
+
+    </div>
+
+
+    <!-- Chart -->
+
+    <section class="chart-card">
+
+      <div class="section-title">
+        Weight trend
+      </div>
+
+      @if (entries().length > 0) {
+
+        <svg
+          class="chart"
+          viewBox="0 0 320 180"
+          preserveAspectRatio="none">
+
+          <line
+            x1="20"
+            y1="160"
+            x2="300"
+            y2="160"
+            class="chart-grid"
+          />
+
+          <line
+            x1="20"
+            y1="100"
+            x2="300"
+            y2="100"
+            class="chart-grid"
+          />
+
+          <line
+            x1="20"
+            y1="20"
+            x2="300"
+            y2="20"
+            class="chart-grid"
+          />
+
+          <polyline
+            [attr.points]="chartPoints()"
+            class="chart-line"
+          />
+
+          @for (
+            dot of chartDots();
+            track $index
+          ) {
+
+            <circle
+              [attr.cx]="dot.x"
+              [attr.cy]="dot.y"
+              r="4"
+              class="chart-dot"
+            />
+
+          }
+
+        </svg>
+
+      } @else {
+
+        <div class="empty-chart">
+
+          <span>
+            No weight entries yet
+          </span>
+
+          <small>
+            Start logging your weight to see
+            your trend here.
+          </small>
+
+        </div>
+
+      }
+
+    </section>
+
+
+    <!-- Statistics -->
+
+    <section class="stats">
+
+      <div class="stat-card">
+
+        <span>Average</span>
+
+        <strong>
+          {{ averageWeight() | number:'1.1-1' }}
+        </strong>
+
+        <small>kg</small>
+
+      </div>
+
+      <div class="stat-card">
+
+        <span>Change</span>
+
+        <strong>
+          {{ periodChange() > 0 ? '+' : '' }}{{ periodChange() | number:'1.1-1' }}
+        </strong>
+
+        <small>kg</small>
+
+      </div>
+
+      <div class="stat-card">
+
+        <span>Lowest</span>
+
+        <strong>
+          {{ lowestWeight() | number:'1.1-1' }}
+        </strong>
+
+        <small>kg</small>
+
+      </div>
+
+      <div class="stat-card">
+
+        <span>Highest</span>
+
+        <strong>
+          {{ highestWeight() | number:'1.1-1' }}
+        </strong>
+
+        <small>kg</small>
+
+      </div>
+
+    </section>
+
+
+    <!-- History -->
+
+    <section class="history">
+
+      <div class="history-header">
+
+        <h2>
+          Weight history
+        </h2>
+
+        <span>
+          {{ entries().length }} entries
+        </span>
+
+      </div>
+
+      @if (entries().length > 0) {
+
+        <div class="history-list">
+
+          @for (
+            entry of entries();
+            track entry.id;
+            let i = $index
+          ) {
+
+            <div class="history-row">
+
+              <div class="history-date">
+
+                <strong>
+                  {{ entry.date | date:'dd MMM' }}
+                </strong>
+
+                @if (i === 0) {
+                  <span>Latest</span>
+                }
+
+              </div>
+
+              <div class="history-weight">
+
+                <strong>
+                  {{ entry.weight | number:'1.1-1' }}
+                  kg
+                </strong>
+
+                @if (
+                  i < entries().length - 1
+                ) {
+
+                  <span
+                    [class.down]="
+                      entry.weight <
+                      entries()[i + 1].weight
+                    "
+                    [class.up]="
+                      entry.weight >
+                      entries()[i + 1].weight
+                    "
+                  >
+
+                    {{
+                      entry.weight <
+                      entries()[i + 1].weight
+                        ? '↓'
+                        : entry.weight >
+                          entries()[i + 1].weight
+                          ? '↑'
+                          : '—'
+                    }}
+
+                    {{
+                      Math.abs(
+                        entry.weight -
+                        entries()[i + 1].weight
+                      ) | number:'1.1-1'
+                    }}
+
+                  </span>
+
+                }
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      } @else {
+
+        <div class="empty-history">
+          No weight history yet.
+        </div>
+
+      }
+
+    </section>
+
+  </div>
+
 </ion-content>
