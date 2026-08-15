@@ -1,0 +1,78 @@
+<div class="goal-editor">
+
+    <div class="field">
+
+        <label>
+            Starting weight
+        </label>
+
+        <div class="input-wrapper">
+
+            <ion-input type="number" min="1" step="0.1" [value]="startingWeight()" (ionInput)="
+          startingWeight.set(
+            +($any($event).detail.value)
+          )
+        " />
+
+            <span>kg</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Target weight
+        </label>
+
+        <div class="input-wrapper">
+
+            <ion-input type="number" min="1" step="0.1" [value]="targetWeight()" (ionInput)="
+          targetWeight.set(
+            +($any($event).detail.value)
+          )
+        " />
+
+            <span>kg</span>
+
+        </div>
+
+    </div>
+
+
+    <div class="field">
+
+        <label>
+            Target date
+            <span class="optional">
+                Optional
+            </span>
+        </label>
+
+        <ion-input type="date" [value]="targetDate()" (ionInput)="
+        targetDate.set(
+          $any($event).detail.value
+        )
+      " />
+
+    </div>
+
+
+    @if (error()) {
+
+    <div class="error-message">
+        {{ error() }}
+    </div>
+
+    }
+
+
+    <button class="save-button" type="button" (click)="submit()">
+
+        {{ buttonLabel }}
+
+    </button>
+
+</div>

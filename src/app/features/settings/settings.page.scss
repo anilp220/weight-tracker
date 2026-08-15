@@ -1,0 +1,121 @@
+:host {
+    display: block;
+}
+
+.settings-screen {
+    min-height: 100%;
+    padding: 28px 22px 40px;
+
+    background: var(--app-background);
+    color: var(--app-text);
+
+    display: flex;
+    flex-direction: column;
+}
+
+.screen-header {
+    text-align: center;
+    margin-bottom: 36px;
+
+    h1 {
+        margin: 0;
+
+        font-size: 24px;
+        font-weight: 700;
+        letter-spacing: -0.4px;
+    }
+
+    p {
+        margin: 6px 0 0;
+
+        color: var(--app-text-secondary);
+        font-size: 14px;
+    }
+}
+
+.settings-section {
+    h2 {
+        margin: 0 0 12px 4px;
+
+        font-size: 17px;
+        font-weight: 700;
+    }
+}
+
+.settings-card {
+    padding: 20px;
+
+    background: var(--app-surface);
+    border-radius: var(--app-radius-lg);
+
+    box-shadow:
+        0 8px 24px rgba(32, 36, 33, 0.04);
+
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    label {
+        color: var(--app-text);
+        font-size: 13px;
+        font-weight: 600;
+    }
+}
+
+.input-wrapper {
+    height: 52px;
+    padding: 0 14px;
+
+    display: flex;
+    align-items: center;
+
+    background: var(--app-background);
+    border: 1px solid var(--app-border);
+    border-radius: 14px;
+
+    ion-input {
+        --padding-start: 0;
+        --padding-end: 0;
+
+        flex: 1;
+
+        color: var(--app-text);
+        font-size: 16px;
+    }
+
+    span {
+        color: var(--app-text-secondary);
+        font-size: 14px;
+    }
+}
+
+.save-button {
+    width: 100%;
+    height: 54px;
+
+    margin-top: auto;
+    padding: 0;
+
+    border: none;
+    border-radius: 18px;
+
+    background: var(--app-primary);
+    color: white;
+
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+
+    box-shadow:
+        0 8px 20px rgba(127, 175, 145, 0.25);
+
+    &:active {
+        transform: scale(0.98);
+    }
+}

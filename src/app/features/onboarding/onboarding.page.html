@@ -19,98 +19,10 @@
 
     </div>
 
-    <div class="form">
-
-      <div class="field">
-
-        <label>
-          Starting weight
-        </label>
-
-        <div class="weight-input">
-
-          <ion-input
-            type="number"
-            [value]="startingWeight()"
-            (ionInput)="
-              startingWeight.set(
-                +($any($event).detail.value)
-              )
-            "
-          />
-
-          <span>kg</span>
-
-        </div>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Target weight
-        </label>
-
-        <div class="weight-input">
-
-          <ion-input
-            type="number"
-            [value]="targetWeight()"
-            (ionInput)="
-              targetWeight.set(
-                +($any($event).detail.value)
-              )
-            "
-          />
-
-          <span>kg</span>
-
-        </div>
-
-      </div>
-
-      <div class="field">
-
-        <label>
-          Target date
-        </label>
-
-        <ion-input
-          type="date"
-          [value]="targetDate()"
-          (ionInput)="
-            targetDate.set(
-              $any($event).detail.value
-            )
-          "
-        />
-
-      </div>
-
-    </div>
-
-    <div class="goal-summary">
-
-      <span>
-        Your goal
-      </span>
-
-      <strong>
-        {{ startingWeight() }} kg
-        →
-        {{ targetWeight() }} kg
-      </strong>
-
-    </div>
-
-    <button
-      class="start-button"
-      type="button"
-      (click)="saveGoal()">
-
-      GET STARTED
-
-    </button>
+    <app-goal-editor
+      buttonLabel="GET STARTED"
+      (saved)="saveGoal($event)"
+    />
 
   </div>
 
