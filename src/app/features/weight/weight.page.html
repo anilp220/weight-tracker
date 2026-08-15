@@ -70,10 +70,12 @@
 
           <div>
             <strong>
-              {{ weightLost() }} kg
+              {{ weightChange() }} kg
             </strong>
 
-            <span>lost</span>
+            <span>
+              {{ goalDirection() === 'gain' ? 'gained' : 'lost' }}
+            </span>
           </div>
 
           <div>
@@ -81,7 +83,9 @@
               {{ weightRemaining() }} kg
             </strong>
 
-            <span>remaining</span>
+            <span>
+              remaining
+            </span>
           </div>
 
         </div>

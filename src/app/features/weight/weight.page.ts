@@ -18,44 +18,66 @@ export class WeightPage implements OnInit {
   readonly formattedWeight = computed(() =>
     this.weight().toFixed(1)
   );
-readonly startingWeight = computed(() =>
-  this.goalStore.goal()?.startingWeight ?? 0
-);
+  readonly goalDirection = computed(() => {
+    const starting = this.startingWeight();
+    const target = this.targetWeight();
 
-readonly targetWeight = computed(() =>
-  this.goalStore.goal()?.targetWeight ?? 0
-);
-
-  readonly weightLost = computed(() =>
-    Math.max(
-      0,
-      this.startingWeight() - this.weight()
-    ).toFixed(1)
-  );
-
-  readonly weightRemaining = computed(() =>
-    Math.max(
-      0,
-      this.weight() - this.targetWeight()
-    ).toFixed(1)
-  );
-
-  readonly progressPercent = computed(() => {
-    const total =
-      this.startingWeight() - this.targetWeight();
-
-    if (total <= 0) {
-      return 0;
+    if (target > starting) {
+      return 'gain';
     }
 
-    const lost =
-      this.startingWeight() - this.weight();
+    if (target < starting) {
+      return 'loss';
+    }
+
+    return 'maintain';
+  });
+  readonly startingWeight = computed(() =>
+    this.goalStore.goal()?.startingWeight ?? 0
+  );
+
+  readonly targetWeight = computed(() =>
+    this.goalStore.goal()?.targetWeight ?? 0
+  );
+
+  readonly weightChange = computed(() => {
+    return Math.abs(
+      this.weight() - this.startingWeight()
+    ).toFixed(1);
+  });
+
+  readonly weightRemaining = computed(() => {
+    return Math.abs(
+      this.targetWeight() - this.weight()
+    ).toFixed(1);
+  });
+
+  readonly progressPercent = computed(() => {
+    const starting = this.startingWeight();
+    const target = this.targetWeight();
+    const current = this.weight();
+
+    const totalDistance = Math.abs(target - starting);
+
+    if (totalDistance === 0) {
+      return 100;
+    }
+
+    let completedDistance: number;
+
+    if (target > starting) {
+      // Weight gain
+      completedDistance = current - starting;
+    } else {
+      // Weight loss
+      completedDistance = starting - current;
+    }
 
     return Math.min(
       100,
       Math.max(
         0,
-        (lost / total) * 100
+        (completedDistance / totalDistance) * 100
       )
     );
   });
