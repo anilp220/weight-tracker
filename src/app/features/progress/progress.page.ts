@@ -9,11 +9,11 @@ import {
   DatePipe,
   DecimalPipe,
 } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import {IonicModule} from '@ionic/angular';
 
-import { WeightStore } from '../../core/services/weight.store';
-import { GoalStore } from '../../core/services/goal.store';
-import { WeightEntry } from '../../core/models/weight-entry.model';
+import {WeightStore} from '../../core/services/weight.store';
+import {GoalStore} from '../../core/services/goal.store';
+import {WeightEntry} from '../../core/models/weight-entry.model';
 
 type ProgressFilter = 'week' | 'month' | 'full';
 
@@ -31,7 +31,7 @@ type ProgressFilter = 'week' | 'month' | 'full';
 export class ProgressPage implements OnInit {
 
   readonly filter = signal<ProgressFilter>('week');
-readonly Math = Math;
+  readonly Math = Math;
   readonly entries = computed(() =>
     this.getFilteredEntries(
       this.weightStore.entries(),
@@ -39,6 +39,129 @@ readonly Math = Math;
     )
   );
 
+  readonly selectedPoint = signal<{
+    date: string;
+    weight: number;
+  } | null>(null);
+
+  readonly chartData = computed(() => {
+    const entries = [...this.entries()]
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    if (!entries.length) {
+      return {
+        polyline: '',
+        dots: [],
+        yLabels: [],
+        xLabels: [],
+      };
+    }
+
+    const width = 320;
+    const height = 220;
+
+    const left = 42;
+    const right = 12;
+    const top = 20;
+    const bottom = 45;
+
+    const chartWidth = width - left - right;
+    const chartHeight = height - top - bottom;
+
+    const weights = entries.map(
+      entry => entry.weight
+    );
+
+    const rawMin = Math.min(...weights);
+    const rawMax = Math.max(...weights);
+
+    // Give the graph some breathing room.
+    const rawRange = rawMax - rawMin;
+
+    const padding =
+      rawRange === 0
+        ? 1
+        : Math.max(rawRange * 0.15, 0.5);
+
+    const minWeight = rawMin - padding;
+    const maxWeight = rawMax + padding;
+
+    const range = maxWeight - minWeight;
+
+    const dots = entries.map((entry, index) => {
+
+      const x =
+        entries.length === 1
+          ? left + chartWidth / 2
+          : left +
+          (index / (entries.length - 1)) *
+          chartWidth;
+
+      const y =
+        top +
+        chartHeight -
+        ((entry.weight - minWeight) / range) *
+        chartHeight;
+
+      return {
+        x,
+        y,
+        weight: entry.weight,
+        date: entry.date,
+      };
+    });
+
+    const polyline = dots
+      .map(dot => `${dot.x},${dot.y}`)
+      .join(' ');
+
+    // Three horizontal grid levels.
+    const yLabels = [0, 1, 2].map(index => {
+
+      const ratio = index / 2;
+
+      const value =
+        maxWeight -
+        ratio * range;
+
+      const y =
+        top +
+        ratio * chartHeight;
+
+      return {
+        value,
+        y,
+      };
+    });
+
+    // Decide how many date labels to show.
+    let maxLabels = 7;
+
+    if (this.filter() === 'month') {
+      maxLabels = 6;
+    }
+
+    if (this.filter() === 'full') {
+      maxLabels = 6;
+    }
+
+    const labelIndexes = this.getLabelIndexes(
+      entries.length,
+      maxLabels
+    );
+
+    const xLabels = labelIndexes.map(index => ({
+      x: dots[index].x,
+      date: entries[index].date,
+    }));
+
+    return {
+      polyline,
+      dots,
+      yLabels,
+      xLabels,
+    };
+  });
   readonly currentWeight = computed(() => {
     return this.weightStore.latestWeight()?.weight ?? null;
   });
@@ -173,8 +296,8 @@ readonly Math = Math;
           entries.length === 1
             ? width / 2
             : padding +
-              (index / (entries.length - 1)) *
-              (width - padding * 2);
+            (index / (entries.length - 1)) *
+            (width - padding * 2);
 
         const y =
           height -
@@ -215,8 +338,8 @@ readonly Math = Math;
         entries.length === 1
           ? width / 2
           : padding +
-            (index / (entries.length - 1)) *
-            (width - padding * 2);
+          (index / (entries.length - 1)) *
+          (width - padding * 2);
 
       const y =
         height -
@@ -235,7 +358,7 @@ readonly Math = Math;
   constructor(
     private readonly weightStore: WeightStore,
     private readonly goalStore: GoalStore
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
     await Promise.all([
@@ -300,53 +423,119 @@ readonly Math = Math;
     return `${year}-${month}-${day}`;
   }
   getChangeClass(
-  currentWeight: number,
-  previousWeight: number
-): 'up' | 'down' | 'neutral' {
-  const change = currentWeight - previousWeight;
+    currentWeight: number,
+    previousWeight: number
+  ): 'up' | 'down' | 'neutral' {
+    const change = currentWeight - previousWeight;
 
-  if (change === 0) {
+    if (change === 0) {
+      return 'neutral';
+    }
+
+    const direction = this.goalDirection();
+
+    // For weight gain:
+    // increase = good
+    // decrease = bad
+    if (direction === 'gain') {
+      return change > 0 ? 'up' : 'down';
+    }
+
+    // For weight loss:
+    // decrease = good
+    // increase = bad
+    if (direction === 'loss') {
+      return change < 0 ? 'up' : 'down';
+    }
+
     return 'neutral';
   }
 
-  const direction = this.goalDirection();
+  getChangeSymbol(
+    currentWeight: number,
+    previousWeight: number
+  ): string {
+    const change = currentWeight - previousWeight;
 
-  // For weight gain:
-  // increase = good
-  // decrease = bad
-  if (direction === 'gain') {
-    return change > 0 ? 'up' : 'down';
+    if (change === 0) {
+      return '—';
+    }
+
+    return change > 0 ? '↑' : '↓';
   }
 
-  // For weight loss:
-  // decrease = good
-  // increase = bad
-  if (direction === 'loss') {
-    return change < 0 ? 'up' : 'down';
+  getChangeAmount(
+    currentWeight: number,
+    previousWeight: number
+  ): number {
+    return Math.abs(
+      currentWeight - previousWeight
+    );
   }
 
-  return 'neutral';
-}
+  private getLabelIndexes(
+    count: number,
+    maxLabels: number
+  ): number[] {
 
-getChangeSymbol(
-  currentWeight: number,
-  previousWeight: number
-): string {
-  const change = currentWeight - previousWeight;
+    if (count <= maxLabels) {
+      return Array.from(
+        {length: count},
+        (_, index) => index
+      );
+    }
 
-  if (change === 0) {
-    return '—';
+    const indexes: number[] = [];
+
+    for (let i = 0; i < maxLabels; i++) {
+
+      const index = Math.round(
+        (i / (maxLabels - 1)) *
+        (count - 1)
+      );
+
+      if (!indexes.includes(index)) {
+        indexes.push(index);
+      }
+    }
+
+    return indexes;
   }
 
-  return change > 0 ? '↑' : '↓';
-}
+  selectPoint(
+    date: string,
+    weight: number
+  ): void {
+    this.selectedPoint.set({
+      date,
+      weight,
+    });
+  }
 
-getChangeAmount(
-  currentWeight: number,
-  previousWeight: number
-): number {
-  return Math.abs(
-    currentWeight - previousWeight
-  );
-}
+  clearSelectedPoint(): void {
+    this.selectedPoint.set(null);
+  }
+
+  formatChartDate(date: string): string {
+    const parsed = new Date(
+      `${date}T00:00:00`
+    );
+
+    return new Intl.DateTimeFormat('en-IN', {
+      day: 'numeric',
+      month: 'short',
+    }).format(parsed);
+  }
+
+  formatFullDate(date: string): string {
+    const parsed = new Date(
+      `${date}T00:00:00`
+    );
+
+    return new Intl.DateTimeFormat('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(parsed);
+  }
 }

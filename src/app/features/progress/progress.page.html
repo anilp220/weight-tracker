@@ -85,57 +85,83 @@
         Weight trend
       </div>
 
-      @if (entries().length > 0) {
-
-        <svg
-          class="chart"
-          viewBox="0 0 320 180"
-          preserveAspectRatio="none">
-
-          <line
-            x1="20"
-            y1="160"
-            x2="300"
-            y2="160"
-            class="chart-grid"
-          />
-
-          <line
-            x1="20"
-            y1="100"
-            x2="300"
-            y2="100"
-            class="chart-grid"
-          />
-
-          <line
-            x1="20"
-            y1="20"
-            x2="300"
-            y2="20"
-            class="chart-grid"
-          />
-
-          <polyline
-            [attr.points]="chartPoints()"
-            class="chart-line"
-          />
-
+      @if(entries().length > 0) {
+      
+      <div class="chart-wrapper" (click)="clearSelectedPoint()">
+      
+        <svg class="chart" viewBox="0 0 320 220" preserveAspectRatio="none">
+      
+          <!-- Horizontal grid -->
+      
           @for (
-            dot of chartDots();
-            track $index
+          label of chartData().yLabels;
+          track $index
           ) {
-
-            <circle
-              [attr.cx]="dot.x"
-              [attr.cy]="dot.y"
-              r="4"
-              class="chart-dot"
-            />
-
+      
+          <line x1="42" [attr.y1]="label.y" x2="308" [attr.y2]="label.y" class="chart-grid" />
+      
+          <text x="36" [attr.y]="label.y + 4" text-anchor="end" class="chart-y-label">
+            {{ label.value | number:'1.0-1' }}
+          </text>
+      
           }
-
+      
+      
+          <!-- Trend line -->
+      
+          <polyline [attr.points]="chartData().polyline" class="chart-line" />
+      
+      
+          <!-- Data points -->
+      
+          @for (
+          dot of chartData().dots;
+          track dot.date
+          ) {
+      
+          <circle [attr.cx]="dot.x" [attr.cy]="dot.y" r="5" class="chart-dot" (click)="
+                  $event.stopPropagation();
+                  selectPoint(dot.date, dot.weight)
+                " />
+      
+          }
+      
+      
+          <!-- X-axis dates -->
+      
+          @for (
+          label of chartData().xLabels;
+          track label.date
+          ) {
+      
+          <text [attr.x]="label.x" y="205" text-anchor="middle" class="chart-x-label">
+            {{ formatChartDate(label.date) }}
+          </text>
+      
+          }
+      
         </svg>
+      
+      
+        <!-- Selected point -->
+      
+        @if (selectedPoint(); as point) {
+      
+        <div class="chart-tooltip" (click)="$event.stopPropagation()">
+      
+          <strong>
+            {{ point.weight | number:'1.1-1' }} kg
+          </strong>
+      
+          <span>
+            {{ formatFullDate(point.date) }}
+          </span>
+      
+        </div>
+      
+        }
+      
+      </div>
 
       } @else {
 
