@@ -2,13 +2,14 @@ import {Component, OnInit, computed, signal} from '@angular/core';
 import {IonicModule} from '@ionic/angular';
 
 import {WeightStore} from '../../core/services/weight.store';
-import { DecimalPipe } from '@angular/common';
+import {DecimalPipe} from '@angular/common';
+import {GoalStore} from 'src/app/core/services/goal.store';
 @Component({
   selector: 'app-weight',
   templateUrl: './weight.page.html',
   styleUrls: ['./weight.page.scss'],
   standalone: true,
-  imports: [IonicModule,DecimalPipe],
+  imports: [IonicModule, DecimalPipe],
 })
 export class WeightPage implements OnInit {
 
@@ -17,33 +18,38 @@ export class WeightPage implements OnInit {
   readonly formattedWeight = computed(() =>
     this.weight().toFixed(1)
   );
-  readonly startingWeight = 72;
-  readonly targetWeight = 65;
+readonly startingWeight = computed(() =>
+  this.goalStore.goal()?.startingWeight ?? 0
+);
+
+readonly targetWeight = computed(() =>
+  this.goalStore.goal()?.targetWeight ?? 0
+);
 
   readonly weightLost = computed(() =>
     Math.max(
       0,
-      this.startingWeight - this.weight()
+      this.startingWeight() - this.weight()
     ).toFixed(1)
   );
 
   readonly weightRemaining = computed(() =>
     Math.max(
       0,
-      this.weight() - this.targetWeight
+      this.weight() - this.targetWeight()
     ).toFixed(1)
   );
 
   readonly progressPercent = computed(() => {
     const total =
-      this.startingWeight - this.targetWeight;
+      this.startingWeight() - this.targetWeight();
 
     if (total <= 0) {
       return 0;
     }
 
     const lost =
-      this.startingWeight - this.weight();
+      this.startingWeight() - this.weight();
 
     return Math.min(
       100,
@@ -63,11 +69,15 @@ export class WeightPage implements OnInit {
     }
   ).format(new Date());
   constructor(
-    private readonly weightStore: WeightStore
+    private readonly weightStore: WeightStore,
+    private readonly goalStore: GoalStore
   ) { }
 
   async ngOnInit(): Promise<void> {
-    await this.weightStore.load();
+    await Promise.all([
+      this.weightStore.load(),
+      this.goalStore.load(),
+    ]);
 
     const latest = this.weightStore.latestWeight();
 

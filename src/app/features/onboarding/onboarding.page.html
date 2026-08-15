@@ -1,13 +1,117 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>onboarding</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">onboarding</ion-title>
-    </ion-toolbar>
-  </ion-header>
+
+  <div class="onboarding">
+
+    <div class="header">
+
+      <p class="eyebrow">
+        WEIGHT
+      </p>
+
+      <h1>
+        Let's set your goal
+      </h1>
+
+      <p class="subtitle">
+        Set your starting point and where
+        you'd like to go.
+      </p>
+
+    </div>
+
+    <div class="form">
+
+      <div class="field">
+
+        <label>
+          Starting weight
+        </label>
+
+        <div class="weight-input">
+
+          <ion-input
+            type="number"
+            [value]="startingWeight()"
+            (ionInput)="
+              startingWeight.set(
+                +($any($event).detail.value)
+              )
+            "
+          />
+
+          <span>kg</span>
+
+        </div>
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          Target weight
+        </label>
+
+        <div class="weight-input">
+
+          <ion-input
+            type="number"
+            [value]="targetWeight()"
+            (ionInput)="
+              targetWeight.set(
+                +($any($event).detail.value)
+              )
+            "
+          />
+
+          <span>kg</span>
+
+        </div>
+
+      </div>
+
+      <div class="field">
+
+        <label>
+          Target date
+        </label>
+
+        <ion-input
+          type="date"
+          [value]="targetDate()"
+          (ionInput)="
+            targetDate.set(
+              $any($event).detail.value
+            )
+          "
+        />
+
+      </div>
+
+    </div>
+
+    <div class="goal-summary">
+
+      <span>
+        Your goal
+      </span>
+
+      <strong>
+        {{ startingWeight() }} kg
+        →
+        {{ targetWeight() }} kg
+      </strong>
+
+    </div>
+
+    <button
+      class="start-button"
+      type="button"
+      (click)="saveGoal()">
+
+      GET STARTED
+
+    </button>
+
+  </div>
+
 </ion-content>
