@@ -289,20 +289,22 @@
   }
 
   span {
-    min-width: 38px;
+    min-width: 50px;
     text-align: right;
-
-    color: var(--app-text-secondary);
     font-size: 12px;
     font-weight: 600;
   }
 
-  span.down {
+  span.up {
     color: var(--app-primary-dark);
   }
 
-  span.up {
+  span.down {
     color: #a46f6f;
+  }
+
+  span.neutral {
+    color: var(--app-text-secondary);
   }
 }
 

@@ -259,34 +259,38 @@
                   kg
                 </strong>
 
-                @if (
-                  i < entries().length - 1
-                ) {
-
+                @if (i < entries().length - 1) {
                   <span
-                    [class.down]="
-                      entry.weight <
-                      entries()[i + 1].weight
-                    "
                     [class.up]="
-                      entry.weight >
-                      entries()[i + 1].weight
+                      getChangeClass(
+                        entry.weight,
+                        entries()[i + 1].weight
+                      ) === 'up'
+                    "
+                    [class.down]="
+                      getChangeClass(
+                        entry.weight,
+                        entries()[i + 1].weight
+                      ) === 'down'
+                    "
+                    [class.neutral]="
+                      getChangeClass(
+                        entry.weight,
+                        entries()[i + 1].weight
+                      ) === 'neutral'
                     "
                   >
 
                     {{
-                      entry.weight <
-                      entries()[i + 1].weight
-                        ? '↓'
-                        : entry.weight >
-                          entries()[i + 1].weight
-                          ? '↑'
-                          : '—'
+                      getChangeSymbol(
+                        entry.weight,
+                        entries()[i + 1].weight
+                      )
                     }}
 
                     {{
-                      Math.abs(
-                        entry.weight -
+                      getChangeAmount(
+                        entry.weight,
                         entries()[i + 1].weight
                       ) | number:'1.1-1'
                     }}

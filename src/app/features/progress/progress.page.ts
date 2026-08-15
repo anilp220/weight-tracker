@@ -299,4 +299,54 @@ readonly Math = Math;
 
     return `${year}-${month}-${day}`;
   }
+  getChangeClass(
+  currentWeight: number,
+  previousWeight: number
+): 'up' | 'down' | 'neutral' {
+  const change = currentWeight - previousWeight;
+
+  if (change === 0) {
+    return 'neutral';
+  }
+
+  const direction = this.goalDirection();
+
+  // For weight gain:
+  // increase = good
+  // decrease = bad
+  if (direction === 'gain') {
+    return change > 0 ? 'up' : 'down';
+  }
+
+  // For weight loss:
+  // decrease = good
+  // increase = bad
+  if (direction === 'loss') {
+    return change < 0 ? 'up' : 'down';
+  }
+
+  return 'neutral';
+}
+
+getChangeSymbol(
+  currentWeight: number,
+  previousWeight: number
+): string {
+  const change = currentWeight - previousWeight;
+
+  if (change === 0) {
+    return '—';
+  }
+
+  return change > 0 ? '↑' : '↓';
+}
+
+getChangeAmount(
+  currentWeight: number,
+  previousWeight: number
+): number {
+  return Math.abs(
+    currentWeight - previousWeight
+  );
+}
 }
