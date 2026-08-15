@@ -3,6 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {IonicModule} from '@ionic/angular';
 
 import {GoalStore} from '../../core/services/goal.store';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-onboarding',
@@ -22,7 +23,8 @@ export class OnboardingPage {
   targetDate = signal('');
 
   constructor(
-    private readonly goalStore: GoalStore
+    private readonly goalStore: GoalStore,
+    private readonly router: Router
   ) { }
 
   async saveGoal(): Promise<void> {
@@ -33,8 +35,8 @@ export class OnboardingPage {
       targetDate: this.targetDate() || undefined,
     });
 
-    console.log('Goal saved:', this.goalStore.goal());
-
-    // Navigation will be added next.
+    await this.router.navigateByUrl('/weight', {
+      replaceUrl: true,
+    });
   }
 }
